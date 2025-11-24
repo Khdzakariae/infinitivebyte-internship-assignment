@@ -205,10 +205,8 @@ This project was created as an internship assignment for Infinitive Byte.
 
 ## 👤 Author
 
-[Your Name]
-[Your Email]
-[Your GitHub]
-
+EL-KHADIR ZAKARIAE
+elkhadirzakariae1337@gmail.com
 ---
 
 Built with ❤️ for Infinitive Byte Internship
