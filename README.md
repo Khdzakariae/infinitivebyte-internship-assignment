@@ -2,6 +2,12 @@
 
 A modern web application for managing government agencies and contacts with authentication and daily viewing limits.
 
+## 📸 Screenshot
+
+![GovConnect Landing Page](public/landing-page.png)
+
+*Modern, responsive landing page with government data access*
+
 ##  Features
 
 - **User Authentication**: Secure authentication powered by Clerk
