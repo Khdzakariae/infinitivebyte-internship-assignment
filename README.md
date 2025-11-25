@@ -2,7 +2,7 @@
 
 A modern web application for managing government agencies and contacts with authentication and daily viewing limits.
 
-## 🚀 Features
+##  Features
 
 - **User Authentication**: Secure authentication powered by Clerk
 - **Agency Management**: Browse and search through 1000+ government agencies
@@ -12,13 +12,13 @@ A modern web application for managing government agencies and contacts with auth
 - **Responsive Design**: Beautiful UI with Tailwind CSS that works on all devices
 - **Database**: PostgreSQL with Prisma ORM for robust data management
 
-## 📋 Requirements
+##  Requirements
 
 - Node.js 18+ 
 - PostgreSQL database
 - Clerk account (free tier available)
 
-## 🛠️ Installation
+##  Installation
 
 ### 1. Clone the repository
 
@@ -89,7 +89,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 infinitivebyte-internship-assignment/
@@ -112,7 +112,7 @@ infinitivebyte-internship-assignment/
 └── middleware.ts           # Clerk authentication middleware
 ```
 
-## 🔑 Key Features Explained
+##  Key Features Explained
 
 ### Daily Contact View Limit
 
@@ -137,7 +137,7 @@ The application implements a 50-contacts-per-day viewing limit for free users:
 - Search and filtering capabilities
 - Pagination for large datasets
 
-## 🎨 Tech Stack
+##  Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
@@ -147,7 +147,7 @@ The application implements a 50-contacts-per-day viewing limit for free users:
 - **ORM**: Prisma
 - **Deployment**: Vercel (recommended)
 
-## 🚢 Deployment
+##  Deployment
 
 ### Deploy to Vercel
 
@@ -176,7 +176,7 @@ npm run db:seed
 
 See `ARCHITECTURE.md` for the system design flowchart and detailed architecture documentation.
 
-## 🧪 Testing
+##  Testing
 
 1. **Sign Up**: Create a new account
 2. **View Agencies**: Browse agencies without limits
@@ -184,7 +184,7 @@ See `ARCHITECTURE.md` for the system design flowchart and detailed architecture 
 4. **Hit Limit**: Try to view contacts after 50 views
 5. **Next Day**: Limit resets automatically
 
-## 🤝 Assignment Completion
+##  Assignment Completion
 
 This project fulfills all requirements:
 
@@ -206,7 +206,3 @@ This project was created as an internship assignment for Infinitive Byte.
 ## 👤 Author
 
 EL-KHADIR ZAKARIAE
-elkhadirzakariae1337@gmail.com
----
-
-Built with ❤️ for Infinitive Byte Internship
