@@ -48,13 +48,6 @@ export default function SignUpPage() {
             signInUrl="/sign-in"
           />
         </div>
-
-        {/* Footer Info */}
-        <div className="mt-12 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Free forever • No credit card required
-          </p>
-        </div>
       </div>
     </div>
   )

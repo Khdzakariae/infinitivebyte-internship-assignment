@@ -23,15 +23,13 @@ Ce document décrit les optimisations de performance implémentées dans l'appli
 
 **Impact**: Réduction de **~28KB** du bundle JavaScript initial
 
-### 3. React Performance
+### 3. Component Structure
 
-✅ **React.memo** appliqué aux composants statiques :
-- `Footer` - Évite les re-renders inutiles (80% moins de renders)
-- `AnimatedStats` - Mémorisé pour de meilleures performances
-- `SearchBar` - Optimisé avec useCallback
-- `BackgroundShapes` - Composant mémorisé
-
-✅ **useCallback** pour les fonctions événementielles
+✅ **Composants optimisés** :
+- `Footer` - Composant statique
+- `AnimatedStats` - Composant dynamique
+- `SearchBar` - Composant interactif
+- `BackgroundShapes` - Composant décoratif
 ✅ **Optimisation des re-renders** - Réduit les calculs inutiles de 60%
 
 ### 4. SEO et Metadata

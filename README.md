@@ -16,12 +16,12 @@ A modern web application for managing government agencies and contacts with auth
 - **Daily View Limit**: Free tier allows 50 contact views per day
 - **Upgrade Prompt**: Prompts users when daily limit is reached
 - **Responsive Design**: Beautiful UI with Tailwind CSS that works on all devices
-- **Database**: PostgreSQL with Prisma ORM for robust data management
+- **Database**: MongoDB Atlas with Prisma ORM for robust data management
 
 ##  Requirements
 
 - Node.js 18+ 
-- PostgreSQL database
+- MongoDB Atlas database (free tier available)
 - Clerk account (free tier available)
 
 ##  Installation
@@ -60,17 +60,18 @@ CLERK_SECRET_KEY=sk_test_...
 ```
 
 #### Database
-Set up a PostgreSQL database (local or cloud):
+Set up a MongoDB Atlas database:
 
-**Option A: Local PostgreSQL**
+**MongoDB Atlas (Recommended - Free Tier)**
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free cluster
+3. Configure network access (allow your IP or 0.0.0.0/0 for development)
+4. Create a database user
+5. Get your connection string
+
 ```env
-DATABASE_URL="postgresql://username:password@localhost:5432/agency_dashboard?schema=public"
+DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/agency_dashboard"
 ```
-
-**Option B: Cloud PostgreSQL (Recommended)**
-- [Neon](https://neon.tech/) - Free tier with instant setup
-- [Supabase](https://supabase.com/) - Free tier with dashboard
-- [Railway](https://railway.app/) - Free tier
 
 ### 4. Initialize the database
 
@@ -145,13 +146,13 @@ The application implements a 50-contacts-per-day viewing limit for free users:
 
 ##  Tech Stack
 
-- **Framework**: Next.js 16 (App Router)
+- **Framework**: Next.js 16
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Authentication**: Clerk
-- **Database**: PostgreSQL
+- **Database**: MongoDB Atlas
 - **ORM**: Prisma
-- **Deployment**: Vercel (recommended)
+- **Deployment**: Vercel
 
 ##  Deployment
 

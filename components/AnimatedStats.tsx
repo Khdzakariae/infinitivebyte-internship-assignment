@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, memo } from 'react'
+import { useEffect, useState } from 'react'
 
 interface StatsProps {
   agencies: number
@@ -8,7 +8,7 @@ interface StatsProps {
   states: number
 }
 
-function AnimatedStats() {
+export default function AnimatedStats() {
   const [stats, setStats] = useState<StatsProps>({ agencies: 0, contacts: 0, states: 0 })
   const [displayStats, setDisplayStats] = useState<StatsProps>({ agencies: 0, contacts: 0, states: 0 })
 
@@ -152,5 +152,3 @@ function AnimatedStats() {
     </div>
   )
 }
-
-export default memo(AnimatedStats)

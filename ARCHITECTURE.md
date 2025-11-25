@@ -7,8 +7,7 @@ GovConnect is a modern, high-performance web application built with Next.js 16 t
 ## Technology Stack
 
 ### Frontend
-- **Next.js 16** - React framework with App Router (RSC)
-- **React 19** - Latest React with Server Components
+- **Next.js 16** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first styling
 
@@ -23,7 +22,6 @@ GovConnect is a modern, high-performance web application built with Next.js 16 t
 
 ### Performance & Optimization
 - **Dynamic Imports** - Code splitting with next/dynamic
-- **React.memo** - Component memoization
 - **Image Optimization** - Next.js Image with AVIF/WebP
 - **Compression** - Gzip/Brotli enabled
 
@@ -38,8 +36,8 @@ GovConnect is a modern, high-performance web application built with Next.js 16 t
 │  │  (Public)    │  │  (Protected) │  │  (Limited)   │          │
 │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘          │
 │         │                 │                  │                   │
-│         │   Dynamic       │   Lazy           │   React.memo     │
-│         │   Imports       │   Loading        │   Optimized      │
+│         │   Dynamic       │   Lazy           │   Optimized      │
+│         │   Imports       │   Loading        │   Components     │
 │         │                 │                  │                   │
 │         └─────────────────┴──────────────────┘                   │
 │                           │                                       │
@@ -324,25 +322,12 @@ const BackgroundShapes = dynamic(() => import("@/components/BackgroundShapes"));
 - 📦 Smaller initial bundle size
 - 🔄 Components loaded only when needed
 
-### 3. React Performance Optimization
-
-**React.memo for Static Components:**
-```typescript
-// Footer, AnimatedStats, SearchBar, BackgroundShapes
-export default memo(ComponentName);
-```
-
-**useCallback for Event Handlers:**
-```typescript
-const handleSearch = useCallback((e) => {
-  // Search logic
-}, [query, searchType]);
-```
+### 3. Component Optimization
 
 **Benefits:**
-- 🚫 Prevents unnecessary re-renders
 - ⚡ Faster UI updates
-- 💾 Reduced memory usage
+- 📦 Smaller bundle sizes
+- 🎯 Focused loading
 
 ### 4. SEO & Metadata Optimization
 
@@ -426,19 +411,18 @@ export const metadata: Metadata = {
 
 ## Component Architecture
 
-### Server Components (RSC)
+### Server-Side Rendered Pages
 - `app/page.tsx` - Home page with dynamic sections
-- `app/agencies/page.tsx` - Agency listing
-- `app/contacts/page.tsx` - Contact listing with limits
+- `app/agencies/page.tsx` - Agency listing (table view)
+- `app/contacts/page.tsx` - Contact listing with 50/day limit (table view)
 - All `/api/*` routes
 
 **Benefits:**
-- Zero JavaScript sent to client
-- Direct database access
+- Data fetching on server
 - Better SEO
 - Faster initial load
 
-### Client Components ('use client')
+### Client-Side Interactive Components
 - `components/Navbar.tsx` - Interactive navigation
 - `components/SearchBar.tsx` - Search functionality
 - `components/AnimatedStats.tsx` - Animated counters
@@ -583,7 +567,7 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
 │  │  │     (CDN)    │  │  Functions   │  │  Runtime │   │   │
 │  │  │              │  │              │  │          │   │   │
 │  │  │ • HTML/CSS   │  │ • API Routes │  │• Instant │   │   │
-│  │  │ • Images     │  │ • RSC        │  │  Deploy  │   │   │
+│  │  │ • Images     │  │ • API Routes │  │  Deploy  │   │   │
 │  │  │ • Fonts      │  │ • Middleware │  │• Global  │   │   │
 │  │  └──────────────┘  └──────────────┘  └──────────┘   │   │
 │  └──────────────────────────────────────────────────────┘   │
@@ -835,7 +819,6 @@ Next view time: 2024-11-25 00:00:01
 
 ## Performance Checklist
 
-- ✅ React.memo on static components
 - ✅ Dynamic imports for heavy components
 - ✅ Image optimization (AVIF/WebP)
 - ✅ Code splitting
@@ -854,7 +837,7 @@ This architecture provides a **modern, performant, and scalable** foundation for
 - 🚀 **Fast**: Sub-2s LCP, dynamic imports, optimized images
 - 🔒 **Secure**: Clerk authentication, server-side limits, API protection
 - 📈 **Scalable**: Serverless architecture, MongoDB Atlas, Vercel Edge
-- 🎨 **Modern**: Next.js 16, React 19, TypeScript, Tailwind CSS
+- 🎨 **Modern**: Next.js 16, TypeScript, Tailwind CSS
 - 📊 **Maintainable**: Clear structure, type safety, documentation
 
 ---

@@ -1,8 +1,6 @@
 'use client'
 
-import { memo } from 'react'
-
-function BackgroundShapes({ opacity = '0.3' }: { opacity?: string }) {
+export default function BackgroundShapes({ opacity = '0.3' }: { opacity?: string }) {
   return (
     <div className={`absolute inset-0 pointer-events-none opacity-${opacity}`}>
       <img 
@@ -14,5 +12,3 @@ function BackgroundShapes({ opacity = '0.3' }: { opacity?: string }) {
     </div>
   )
 }
-
-export default memo(BackgroundShapes)
