@@ -132,10 +132,10 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
         )}
 
         {/* Header Section */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div className="flex-1">
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 Agency Contacts
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400">
@@ -171,42 +171,48 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
           </div>
         ) : (
           <>
-            {/* Search Bar */}
-            <form className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Search Bar - Mobile Optimized */}
+            <form className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Search Contacts</h2>
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Search Contacts</h2>
               </div>
-              <div className="flex gap-4">
+              
+              {/* Mobile: Stack vertically, Desktop: Horizontal */}
+              <div className="space-y-3 sm:space-y-0 sm:flex sm:gap-3">
                 <div className="flex-1">
                   <input
                     type="text"
                     name="search"
                     defaultValue={search}
                     placeholder="Search by name, email, or title..."
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-transparent transition-all"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-transparent transition-all"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-gray-800 to-gray-950 dark:from-gray-200 dark:to-gray-400 hover:from-gray-900 hover:to-black dark:hover:from-gray-300 dark:hover:to-gray-500 text-white dark:text-black px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  Search
-                </button>
-                <Link
-                  href="/contacts"
-                  className="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  Clear
-                </Link>
+                
+                {/* Buttons: Full width on mobile, auto on desktop */}
+                <div className="flex gap-2 sm:gap-3">
+                  <button
+                    type="submit"
+                    className="flex-1 sm:flex-none bg-gradient-to-r from-gray-800 to-gray-950 dark:from-gray-200 dark:to-gray-400 hover:from-gray-900 hover:to-black dark:hover:from-gray-300 dark:hover:to-gray-500 text-white dark:text-black px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base shadow-md hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span className="hidden sm:inline">Search</span>
+                  </button>
+                  <Link
+                    href="/contacts"
+                    className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span className="hidden sm:inline">Clear</span>
+                  </Link>
+                </div>
               </div>
             </form>
 

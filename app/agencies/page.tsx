@@ -91,27 +91,17 @@ export default async function AgenciesPage({ searchParams }: AgenciesPageProps) 
         )}
 
         {/* Header Section with Stats */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 Government Agencies
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400">
                 Browse through {total.toLocaleString()} agencies across the United States
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:hidden gap-3 w-full">
-              <div className="bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-400 px-4 py-3 rounded-xl shadow-lg border border-gray-600 dark:border-gray-400 text-center">
-                <div className="text-2xl font-bold text-white dark:text-black">{total.toLocaleString()}</div>
-                <div className="text-xs text-gray-100 dark:text-gray-700 font-medium">Agencies</div>
-              </div>
-              <div className="bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-400 px-4 py-3 rounded-xl shadow-lg border border-gray-600 dark:border-gray-400 text-center">
-                <div className="text-2xl font-bold text-white dark:text-black">{totalPages}</div>
-                <div className="text-xs text-gray-100 dark:text-gray-700 font-medium">Pages</div>
-              </div>
-            </div>
-            <div className="hidden sm:flex gap-4">
+            <div className="hidden md:flex gap-4">
               <div className="bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-400 px-6 py-4 rounded-xl shadow-lg border border-gray-600 dark:border-gray-400 text-center">
                 <div className="text-3xl font-bold text-white dark:text-black">{total.toLocaleString()}</div>
                 <div className="text-sm text-gray-100 dark:text-gray-700 font-medium">Total Agencies</div>
@@ -205,7 +195,7 @@ export default async function AgenciesPage({ searchParams }: AgenciesPageProps) 
         </div>
 
         {/* Agencies Cards Grid - Modern Card View */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {agencies.map((agency) => (
             <div
               key={agency.id}
