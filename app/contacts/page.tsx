@@ -132,10 +132,10 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
         )}
 
         {/* Header Section */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 Agency Contacts
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-400">

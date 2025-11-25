@@ -29,20 +29,20 @@ export default function Home() {
             </div>
 
             <div className="text-center max-w-5xl mx-auto">
-              <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold text-gray-900 dark:text-white mb-6 leading-[1.1] tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-gray-900 dark:text-white mb-4 sm:mb-6 leading-[1.1] tracking-tight px-4">
                 Government Data
                 <span className="block text-gray-900 dark:text-white mt-2">
                   Made Simple
                 </span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg md:text-2xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
                 Access 900+ agencies and 1000+ verified contacts in seconds. 
                 <span className="block mt-2 font-medium text-gray-700 dark:text-gray-200">The modern platform for government research.</span>
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-12 px-4">
                 <SignInButton mode="modal">
-                  <button className="group relative bg-black dark:bg-white text-white dark:text-black px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl hover:shadow-gray-900/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1">
+                  <button className="group relative w-full sm:w-auto bg-black dark:bg-white text-white dark:text-black px-8 sm:px-10 py-4 sm:py-5 rounded-2xl text-base sm:text-lg font-bold shadow-2xl hover:shadow-gray-900/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                     <span className="relative z-10 flex items-center gap-2">
                       Start Free Trial
                       <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 px-4">
               {/* Feature 1 */}
               <div className="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
                 <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-400 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-gray-700/50 dark:shadow-gray-300/50">
@@ -223,7 +223,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 px-4">
               {/* Free Plan */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
@@ -431,9 +431,9 @@ export default function Home() {
                 </div>
 
                 {/* Mini Stats */}
-                <div className="mt-16 grid grid-cols-3 gap-8 max-w-3xl mx-auto">
+                <div className="mt-12 sm:mt-16 grid grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto px-4">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-white dark:text-white mb-2">922</div>
+                    <div className="text-2xl sm:text-4xl font-bold text-white dark:text-white mb-1 sm:mb-2">922</div>
                     <div className="text-gray-200 dark:text-gray-200 text-sm font-medium">Agencies</div>
                   </div>
                   <div className="text-center">
@@ -497,9 +497,9 @@ export default function Home() {
             </div>
 
             {/* Main Navigation Cards */}
-            <div className="mb-12">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Access</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="mb-8 sm:mb-12">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Quick Access</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {/* Agencies Card */}
                 <Link href="/agencies" className="group relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-300 dark:to-gray-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
@@ -586,7 +586,7 @@ export default function Home() {
             </div>
 
             {/* Additional Features Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {/* Feature 1 - Advanced Filters */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-300 dark:to-gray-500 rounded-xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
