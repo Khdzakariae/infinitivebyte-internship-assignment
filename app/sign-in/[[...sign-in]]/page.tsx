@@ -44,7 +44,7 @@ export default function SignInPage() {
                 footer: "hidden",
               }
             }}
-            fallbackRedirectUrl="/agencies"
+            fallbackRedirectUrl="/"
             signUpUrl="/sign-up"
           />
         </div>

@@ -25,7 +25,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 shadow-lg">
+    <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -147,7 +147,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg">
+        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 backdrop-blur-lg">
           <div className="px-4 py-4 space-y-2">
             {navigation.map((item) => {
               const isActive = pathname === item.href

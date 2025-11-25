@@ -15,6 +15,7 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
   const page = parseInt(params.page || '1')
   const search = params.search || ''
   const perPage = 50
+  const MAX_CONTACTS_PER_DAY = 50 // Limite de 50 contacts par jour
 
   let canView = false
   let remaining = 0
@@ -33,8 +34,12 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
 
   let contacts: any[] = []
   let total = 0
+  let actualTotal = 0
+  
+  // L'utilisateur ne peut voir que la page 1 (50 contacts par jour)
+  const isPageLocked = page > 1
 
-  if (canView && !dbError) {
+  if (canView && !dbError && !isPageLocked) {
     const where = search
       ? {
           OR: [
@@ -46,26 +51,43 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
         }
       : {}
 
-    ;[contacts, total] = await Promise.all([
-      prisma.contact.findMany({
-        where,
-        skip: (page - 1) * perPage,
-        take: perPage,
-        include: {
-          agency: {
-            select: {
-              name: true,
-              stateCode: true,
-            },
+    // Compter le total réel
+    actualTotal = await prisma.contact.count({ where })
+    total = Math.min(actualTotal, MAX_CONTACTS_PER_DAY)
+
+    // Charger seulement les 50 premiers contacts (page 1 uniquement)
+    contacts = await prisma.contact.findMany({
+      where,
+      skip: 0,
+      take: MAX_CONTACTS_PER_DAY,
+      include: {
+        agency: {
+          select: {
+            name: true,
+            stateCode: true,
           },
         },
-        orderBy: { lastName: 'asc' },
-      }),
-      prisma.contact.count({ where }),
-    ])
+      },
+      orderBy: { lastName: 'asc' },
+    })
+  } else if (canView && !dbError && isPageLocked) {
+    // Si la page est verrouillée, compter quand même le total
+    const where = search
+      ? {
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' as const } },
+            { lastName: { contains: search, mode: 'insensitive' as const } },
+            { email: { contains: search, mode: 'insensitive' as const } },
+            { title: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {}
+    actualTotal = await prisma.contact.count({ where })
+    total = actualTotal
   }
 
-  const totalPages = Math.ceil(total / perPage)
+  const totalPages = Math.ceil(actualTotal / perPage)
+  const maxUnlockedPages = 1 // Seulement 1 page déverrouillée (50 contacts)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-black dark:via-gray-950 dark:to-black relative overflow-hidden">
@@ -109,7 +131,7 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
           </div>
         )}
 
-        {/* Header Section with Stats */}
+        {/* Header Section */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div className="flex-1">
@@ -119,122 +141,6 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
               <p className="text-lg text-gray-600 dark:text-gray-400">
                 Access contact information for agency employees
               </p>
-            </div>
-            <div className="relative group">
-              {/* Glow Effect */}
-              <div className={`absolute inset-0 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity ${
-                viewedToday >= 50 
-                  ? 'bg-gradient-to-br from-red-500 to-orange-500' 
-                  : viewedToday >= 40 
-                  ? 'bg-gradient-to-br from-orange-500 to-yellow-500'
-                  : 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-300 dark:to-gray-500'
-              }`}></div>
-              
-              <div className="relative bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-                {/* Compact Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
-                      viewedToday >= 50 
-                        ? 'bg-gradient-to-br from-red-500 to-orange-500' 
-                        : viewedToday >= 40 
-                        ? 'bg-gradient-to-br from-orange-500 to-yellow-500'
-                        : 'bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-400'
-                    }`}>
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </div>
-                    
-                    <div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">
-                        Daily Views
-                      </div>
-                      <div className="flex items-baseline gap-2">
-                        <span className={`text-3xl font-bold ${
-                          viewedToday >= 50 
-                            ? 'bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent' 
-                            : viewedToday >= 40 
-                            ? 'bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent'
-                            : 'text-gray-900 dark:text-white'
-                        }`}>
-                          {viewedToday}
-                        </span>
-                        <span className="text-gray-400 dark:text-gray-500 text-sm font-medium">/ 50</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Compact Badge */}
-                  {viewedToday >= 50 ? (
-                    <span className="px-2.5 py-1 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg animate-pulse">
-                      LIMIT
-                    </span>
-                  ) : viewedToday >= 40 ? (
-                    <span className="px-2.5 py-1 bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs font-bold rounded-full shadow-lg">
-                      WARNING
-                    </span>
-                  ) : (
-                    <span className="px-2.5 py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold rounded-full shadow-lg">
-                      ACTIVE
-                    </span>
-                  )}
-                </div>
-
-                {/* Compact Progress Bar */}
-                <div className="mb-3">
-                  <div className="relative h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden shadow-inner">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-1000 ease-out relative ${
-                        viewedToday >= 50 
-                          ? 'bg-gradient-to-r from-red-500 via-orange-500 to-red-500' 
-                          : viewedToday >= 40 
-                          ? 'bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500'
-                          : 'bg-gradient-to-r from-gray-700 via-gray-800 to-gray-700 dark:from-gray-300 dark:via-gray-400 dark:to-gray-300'
-                      }`}
-                      style={{ width: `${Math.min((viewedToday / 50) * 100, 100)}%` }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between mt-1.5">
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                      {Math.round((viewedToday / 50) * 100)}% Used
-                    </span>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                      {remaining} Remaining
-                    </span>
-                  </div>
-                </div>
-
-                {/* Compact Status */}
-                <div className={`flex items-center gap-2 p-2.5 rounded-xl ${
-                  remaining > 0 
-                    ? 'bg-green-50 dark:bg-green-900/20' 
-                    : 'bg-red-50 dark:bg-red-900/20'
-                }`}>
-                  {remaining > 0 ? (
-                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                  <span className={`text-xs font-medium ${
-                    remaining > 0 
-                      ? 'text-green-700 dark:text-green-300' 
-                      : 'text-red-700 dark:text-red-300'
-                  }`}>
-                    {remaining > 0 
-                      ? `${remaining} contact${remaining !== 1 ? 's' : ''} available` 
-                      : 'Limit reached — Upgrade for more'
-                    }
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -246,7 +152,7 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
               Daily Limit Reached
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-              You have viewed {viewedToday} contacts today. The free tier allows 50 contacts per day.
+              You have reached your daily limit of <strong>50 contacts</strong>. The free tier allows viewing up to 50 contacts per day. Come back tomorrow or upgrade for unlimited access.
             </p>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-8 max-w-md mx-auto shadow-lg border border-gray-200 dark:border-gray-700">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
@@ -255,9 +161,12 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Get unlimited access to all contacts with our premium plan
               </p>
-              <button className="bg-gradient-to-r from-gray-800 to-gray-950 dark:from-gray-200 dark:to-gray-400 hover:from-gray-900 hover:to-black dark:hover:from-gray-300 dark:hover:to-gray-500 text-white dark:text-black px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                Upgrade Now (Coming Soon)
-              </button>
+              <Link
+                href="/upgrade"
+                className="inline-block bg-gradient-to-r from-gray-800 to-gray-950 dark:from-gray-200 dark:to-gray-400 hover:from-gray-900 hover:to-black dark:hover:from-gray-300 dark:hover:to-gray-500 text-white dark:text-black px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              >
+                Upgrade Now
+              </Link>
             </div>
           </div>
         ) : (
@@ -302,13 +211,39 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
             </form>
 
             {/* Results Info */}
-            <div className="mb-6 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-              <div>
-                Showing <span className="font-semibold text-gray-900 dark:text-white">{((page - 1) * perPage) + 1}</span> to <span className="font-semibold text-gray-900 dark:text-white">{Math.min(page * perPage, total)}</span> of <span className="font-semibold text-gray-900 dark:text-white">{total.toLocaleString()}</span> contacts
+            <div className="mb-6">
+              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
+                <div>
+                  Showing <span className="font-semibold text-gray-900 dark:text-white">1</span> to <span className="font-semibold text-gray-900 dark:text-white">{total}</span> of <span className="font-semibold text-gray-900 dark:text-white">{total.toLocaleString()}</span> contacts
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="text-xs bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-300 dark:to-gray-400 text-white dark:text-black px-3 py-1 rounded-full font-semibold shadow-lg">
+                    Page 1 of 1
+                  </div>
+                  <div className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full font-semibold border border-amber-300 dark:border-amber-700">
+                    50 Contacts/Day Limit
+                  </div>
+                </div>
               </div>
-              {totalPages > 1 && (
-                <div className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full border border-gray-300 dark:border-gray-600">
-                  Page {page} of {totalPages}
+              {actualTotal > MAX_CONTACTS_PER_DAY && (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-4 flex items-start gap-3">
+                  <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-amber-900 dark:text-amber-200 mb-1">
+                      Limited View - Free Tier
+                    </p>
+                    <p className="text-xs text-amber-800 dark:text-amber-300">
+                      Free tier allows viewing <strong>50 contacts per day</strong>. There are <strong>{actualTotal.toLocaleString()}</strong> total contacts available. Upgrade to Premium for unlimited daily access to all contacts across multiple pages.
+                    </p>
+                  </div>
+                  <Link
+                    href="/upgrade"
+                    className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold rounded-lg shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+                  >
+                    Upgrade
+                  </Link>
                 </div>
               )}
             </div>
@@ -318,89 +253,132 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
               <ContactsTable contacts={contacts} />
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={`/contacts?page=1${search ? `&search=${search}` : ''}`}
-                    className={`p-2 rounded-lg border ${
-                      page === 1
-                        ? 'border-gray-200 dark:border-gray-700 text-gray-400 cursor-not-allowed'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all'
-                    }`}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            {/* Pagination System */}
+            {isPageLocked ? (
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-2xl p-8 text-center shadow-xl">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
+                  </div>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+                  🔒 Page {page} Locked
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-2">
+                  Free tier users can only view <strong>50 contacts per day</strong>
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Page 1 available • Pages 2-{totalPages} require Premium
+                </p>
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-2xl mx-auto shadow-lg border border-gray-200 dark:border-gray-700 mb-6">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 font-medium">Page Access Status:</p>
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const pageNum = i + 1
+                      return (
+                        <div key={pageNum} className="relative">
+                          <div className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold text-sm transition-all ${
+                            pageNum === 1
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
+                              : pageNum === page
+                              ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg ring-4 ring-red-200 dark:ring-red-800'
+                              : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
+                          }`}>
+                            {pageNum}
+                          </div>
+                          {pageNum > 1 && (
+                            <div className="absolute -top-1 -right-1">
+                              <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                    {totalPages > 5 && (
+                      <div className="text-gray-400 dark:text-gray-500 font-bold">
+                        ... +{totalPages - 5}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    ✅ Page 1 Available (Free) • 🔒 Pages 2+ Locked (Premium Only)
+                  </p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md mx-auto shadow-lg border border-gray-200 dark:border-gray-700">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                    ⚡ Unlock All Pages Instantly
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+                    Upgrade to Premium to access all {totalPages} pages immediately without waiting
+                  </p>
+                  <Link
+                    href="/upgrade"
+                    className="block w-full text-center bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105 mb-3"
+                  >
+                    Upgrade to Premium
                   </Link>
-                  {page > 1 && (
-                    <Link
-                      href={`/contacts?page=${page - 1}${search ? `&search=${search}` : ''}`}
-                      className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 font-medium transition-all flex items-center gap-2"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Previous
-                    </Link>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    let pageNum
-                    if (totalPages <= 5) {
-                      pageNum = i + 1
-                    } else if (page <= 3) {
-                      pageNum = i + 1
-                    } else if (page >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i
-                    } else {
-                      pageNum = page - 2 + i
-                    }
-                    
-                    return (
-                      <Link
-                        key={pageNum}
-                        href={`/contacts?page=${pageNum}${search ? `&search=${search}` : ''}`}
-                        className={`w-10 h-10 flex items-center justify-center rounded-lg font-semibold transition-all ${
-                          page === pageNum
-                            ? 'bg-gradient-to-r from-gray-800 to-gray-950 dark:from-gray-200 dark:to-gray-400 text-white dark:text-black shadow-lg scale-110'
-                            : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
-                        }`}
-                      >
-                        {pageNum}
-                      </Link>
-                    )
-                  })}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {page < totalPages && (
-                    <Link
-                      href={`/contacts?page=${page + 1}${search ? `&search=${search}` : ''}`}
-                      className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 font-medium transition-all flex items-center gap-2"
-                    >
-                      Next
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  )}
                   <Link
-                    href={`/contacts?page=${totalPages}${search ? `&search=${search}` : ''}`}
-                    className={`p-2 rounded-lg border ${
-                      page === totalPages
-                        ? 'border-gray-200 dark:border-gray-700 text-gray-400 cursor-not-allowed'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all'
-                    }`}
+                    href="/contacts"
+                    className="block w-full text-center px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                    </svg>
+                    ← Back to Unlocked Pages
                   </Link>
                 </div>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                <div className="text-center mb-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Free Tier • <strong>1 page available</strong> (50 contacts per day)
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  <div className="relative w-12 h-12 flex items-center justify-center rounded-lg font-bold transition-all bg-gradient-to-r from-gray-800 to-gray-950 dark:from-gray-200 dark:to-gray-400 text-white dark:text-black shadow-lg">
+                    1
+                  </div>
+                  
+                  {totalPages > 1 && (
+                    <>
+                      <div className="relative w-12 h-12 flex items-center justify-center rounded-lg font-bold transition-all bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50">
+                        2
+                        <svg className="absolute -top-1 -right-1 w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="relative w-12 h-12 flex items-center justify-center rounded-lg font-bold transition-all bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50">
+                        3
+                        <svg className="absolute -top-1 -right-1 w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      {totalPages > 3 && (
+                        <div className="text-gray-400 dark:text-gray-500 font-bold text-lg">
+                          ... +{totalPages - 3}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                {totalPages > 1 && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                      <strong>{totalPages} total pages</strong> available with Premium
+                    </p>
+                    <Link
+                      href="/upgrade"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-800 to-gray-950 dark:from-gray-200 dark:to-gray-400 text-white dark:text-black text-sm font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
+                      Unlock All Pages
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </>
