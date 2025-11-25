@@ -1,10 +1,20 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AnimatedStats from "@/components/AnimatedStats";
-import SearchBar from "@/components/SearchBar";
-import BackgroundShapes from "@/components/BackgroundShapes";
+
+// Lazy load des composants lourds pour améliorer les performances
+// AnimatedStats est un client component, donc on peut utiliser ssr: false
+const AnimatedStats = dynamic(() => import("@/components/AnimatedStats"), {
+  loading: () => <div className="h-64 animate-pulse bg-gray-200 dark:bg-gray-800 rounded-2xl" />
+});
+
+const SearchBar = dynamic(() => import("@/components/SearchBar"), {
+  loading: () => <div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded-xl" />
+});
+
+const BackgroundShapes = dynamic(() => import("@/components/BackgroundShapes"));
 
 export default function Home() {
   return (

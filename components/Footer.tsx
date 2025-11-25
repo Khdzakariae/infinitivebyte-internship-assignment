@@ -1,6 +1,7 @@
 import Link from 'next/link'
+import { memo } from 'react'
 
-export default function Footer() {
+function Footer() {
   const currentYear = new Date().getFullYear()
 
   const navigation = {
@@ -203,3 +204,5 @@ export default function Footer() {
     </footer>
   )
 }
+
+export default memo(Footer)

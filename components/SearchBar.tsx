@@ -1,19 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function SearchBar() {
+function SearchBar() {
   const [query, setQuery] = useState('')
   const [searchType, setSearchType] = useState<'agencies' | 'contacts'>('agencies')
   const router = useRouter()
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
       router.push(`/${searchType}?search=${encodeURIComponent(query)}`)
     }
-  }
+  }, [query, searchType, router])
 
   return (
     <div className="relative max-w-3xl mx-auto">
@@ -127,3 +127,5 @@ export default function SearchBar() {
     </div>
   )
 }
+
+export default memo(SearchBar)
